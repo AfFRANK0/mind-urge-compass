@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#173227">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Adrian's Mind & Urge Compass</title>
+<style>
+:root{--bg:#f4f0e7;--card:#fffdf8;--ink:#173227;--muted:#68736e;--green:#2f6f52;--green2:#dceee3;--gold:#8c6823;--gold2:#f7edcf;--red:#8a432d;--red2:#f4ddd5;--line:#dfe3de;--shadow:0 12px 30px rgba(23,50,39,.09)}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#e9f2ec 0,#f4f0e7 290px)}
+.wrap{max-width:1000px;margin:auto;padding:18px}header{padding:16px 4px 10px}h1{margin:0;font-size:clamp(1.9rem,5vw,3.15rem);letter-spacing:-.045em;line-height:1}.subtitle{margin:.6rem 0 0;color:var(--muted);max-width:760px;line-height:1.45}
+.daily{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:17px 0}@media(max-width:800px){.daily{grid-template-columns:1fr}}
+.daily-card,.card{background:var(--card);border:1px solid rgba(23,50,39,.08);border-radius:18px;padding:17px;box-shadow:var(--shadow)}
+.daily-card{min-height:160px}.eyebrow{color:var(--green);font-size:.74rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}.daily-card p{margin:0;font-weight:700;line-height:1.48}.daily-card cite{display:block;color:var(--muted);font-style:normal;margin-top:9px;font-size:.84rem}
+nav{display:flex;gap:8px;overflow:auto;padding:5px 0 14px;position:sticky;top:0;z-index:20;background:rgba(244,240,231,.94);backdrop-filter:blur(10px)}
+nav button,.btn{border:0;border-radius:999px;padding:10px 14px;font-weight:800;cursor:pointer;background:#e5e9e5;color:var(--ink);white-space:nowrap}
+nav button.active,.btn.primary{background:var(--green);color:white}.btn.secondary{background:var(--green2)}.btn.gold{background:var(--gold2);color:#6b501b}.btn.danger{background:var(--red2);color:var(--red)}
+.tab{display:none}.tab.active{display:block}.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.card{grid-column:span 12}.half{grid-column:span 6}@media(max-width:760px){.half{grid-column:span 12}}
+h2{margin:0 0 11px;font-size:1.23rem}label{display:block;font-size:.9rem;font-weight:780;margin:11px 0 5px}input,select,textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:white;color:var(--ink);font:inherit}textarea{min-height:88px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:550px){.row{grid-template-columns:1fr}}
+.range{display:flex;justify-content:space-between;align-items:center}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.notice{background:#fff3d8;border:1px solid #edd29a;padding:13px;border-radius:13px;color:#6c511c}.muted{color:var(--muted)}
+.step{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #eceeea}.step:last-child{border-bottom:0}.num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--green);color:white;font-weight:900;flex:0 0 auto}.step b{display:block;margin-bottom:3px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}@media(max-width:680px){.stats{grid-template-columns:1fr 1fr}}.stat{background:#eef5f0;padding:13px;border-radius:14px}.stat b{display:block;font-size:1.35rem}.stat span{font-size:.8rem;color:var(--muted)}
+.factbox{background:linear-gradient(135deg,#fffaf0,#fffdf8);border:1px solid #eadbb4;border-radius:16px;padding:17px}.badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:.72rem;font-weight:900;margin-top:10px}.confirmed{background:#dcefe3;color:#225c42}.interpretation{background:#f7edcf;color:#71551b}.speculative{background:#f4ddd5;color:#7e3f29}.source{font-size:.84rem;color:var(--muted);margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:.9rem}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid #e8ebe7;vertical-align:top}th{font-size:.76rem;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}.empty{text-align:center;color:var(--muted);padding:20px}
+.footer{text-align:center;color:var(--muted);font-size:.84rem;padding:24px 4px 36px}#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#173227;color:white;padding:11px 15px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;z-index:40}#toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>Mind & Urge Compass</h1>
+<p class="subtitle">Notice the thought. Find the trigger. Pause before acting. Choose what serves the person you are becoming.</p>
+<div class="daily">
+<div class="daily-card"><div class="eyebrow">Daily verse</div><p id="dailyVerse"></p><cite id="verseRef"></cite></div>
+<div class="daily-card"><div class="eyebrow">Daily thought</div><p id="dailyQuote"></p><cite>— Inner Compass</cite></div>
+<div class="daily-card"><div class="eyebrow">Fascinating fact</div><p id="dailyFact"></p><cite id="factSource"></cite><span id="factBadge" class="badge confirmed"></span></div>
+</div>
+</header>
+
+<nav>
+<button class="active" data-tab="today">Today</button>
+<button data-tab="reset">Urge Reset</button>
+<button data-tab="explore">Explore</button>
+<button data-tab="history">History</button>
+<button data-tab="backup">Backup</button>
+</nav>
+
+<section id="today" class="tab active">
+<div class="grid">
+<div class="card">
+<div class="row">
+<div><label for="entryDate">Date</label><input id="entryDate" type="date"></div>
+<div><label for="state">Your state right now</label><select id="state"><option>Calm</option><option>Focused</option><option>Tired</option><option>Bored</option><option>Restless</option><option>Stressed</option><option>Frustrated</option><option>Tempted</option><option>Overthinking</option></select></div>
+</div>
+</div>
+
+<div class="card half">
+<h2>What is happening?</h2>
+<label for="thought">What exact sentence is your mind saying?</label>
+<textarea id="thought" placeholder='Example: “Just do it once. It will not matter.”'></textarea>
+<label for="body">Where do you feel it in your body?</label>
+<input id="body" placeholder="Chest, jaw, stomach, hands, restlessness...">
+<label for="trigger">What triggered it?</label>
+<select id="trigger"><option>Boredom</option><option>Stress</option><option>Loss</option><option>FOMO</option><option>Loneliness</option><option>Fatigue</option><option>Frustration</option><option>Habit cue</option><option>Wanting relief</option><option>Wanting stimulation</option><option>Other</option></select>
+<label class="range" for="strength"><span>Urge strength</span><span id="strengthVal">5/10</span></label>
+<input id="strength" type="range" min="1" max="10" value="5">
+</div>
+
+<div class="card half">
+<h2>Separate impulse from choice</h2>
+<label for="reward">What immediate reward is your mind seeking?</label>
+<input id="reward" placeholder="Relief, excitement, control, comfort, escape...">
+<label for="ignored">What consequence is the urge hiding?</label>
+<textarea id="ignored" placeholder="What will this cost later?"></textarea>
+<label for="wise">What would the peaceful, disciplined version of you do?</label>
+<textarea id="wise" placeholder="One realistic action."></textarea>
+<label for="delay">Delay before deciding</label>
+<select id="delay"><option>5 minutes</option><option selected>10 minutes</option><option>15 minutes</option><option>30 minutes</option><option>Until tomorrow</option></select>
+</div>
+
+<div class="card half">
+<h2>Your response</h2>
+<label for="action">What did you choose?</label>
+<select id="action"><option>I paused and did not obey the urge</option><option>I delayed and chose again calmly</option><option>I replaced it with a healthier action</option><option>I partly gave in, then stopped</option><option>I followed the urge</option><option>I am still deciding</option></select>
+<label for="replacement">What did you do instead?</label>
+<input id="replacement" placeholder="Walk, water, breathing, reading, cleaning...">
+<label for="lesson">What did this teach you?</label>
+<textarea id="lesson" placeholder="Name the pattern honestly."></textarea>
+</div>
+
+<div class="card half">
+<h2>Short reflection</h2>
+<label for="gratitude">One thing you are grateful for</label>
+<input id="gratitude" placeholder="Something specific">
+<label for="truth">What is true right now, without the story?</label>
+<textarea id="truth" placeholder="Only observable facts."></textarea>
+<label for="next">The next wise action</label>
+<input id="next" placeholder="One small action">
+</div>
+
+<div class="card">
+<div class="notice">A thought is not an instruction. An urge can be felt without being obeyed.</div>
+<div class="actions"><button class="btn primary" id="saveEntry">Save check-in</button><button class="btn secondary" id="loadEntry">Reload saved entry</button><button class="btn gold" id="clearForm">Clear form</button></div>
+</div>
+</div>
+</section>
+
+<section id="reset" class="tab">
+<div class="grid">
+<div class="card half">
+<h2>10-minute urge reset</h2>
+<div class="step"><div class="num">1</div><div><b>Name it</b><span class="muted">“Boredom is here.” “The urge to trade is here.” Do not turn it into your identity.</span></div></div>
+<div class="step"><div class="num">2</div><div><b>Find it in the body</b><span class="muted">Notice pressure, heat, tightness, or restlessness.</span></div></div>
+<div class="step"><div class="num">3</div><div><b>Expose the bargain</b><span class="muted">“My mind is promising relief now while hiding the later cost.”</span></div></div>
+<div class="step"><div class="num">4</div><div><b>Change your physical state</b><span class="muted">Stand up, walk, breathe slowly, drink water, or step outside.</span></div></div>
+<div class="step"><div class="num">5</div><div><b>Delay</b><span class="muted">You are not saying “never.” You are refusing automatic action.</span></div></div>
+<div class="step"><div class="num">6</div><div><b>Choose from values</b><span class="muted">“What action would make me trust myself more tomorrow?”</span></div></div>
+</div>
+
+<div class="card half">
+<h2>Start the pause</h2>
+<div class="stats">
+<div class="stat"><b id="timerDisplay">10:00</b><span>Time left</span></div>
+<div class="stat"><b id="breathText">Inhale</b><span>Breathing cue</span></div>
+<div class="stat"><b id="resetCount">0</b><span>Resets completed</span></div>
+<div class="stat"><b id="urgeNow">—</b><span>Urge after reset</span></div>
+</div>
+<div class="actions"><button class="btn primary" id="startTimer">Start</button><button class="btn secondary" id="pauseTimer">Pause</button><button class="btn gold" id="resetTimer">Reset</button></div>
+<label class="range" for="afterStrength"><span>Urge strength after the pause</span><span id="afterStrengthVal">5/10</span></label>
+<input id="afterStrength" type="range" min="1" max="10" value="5">
+<button class="btn secondary" id="saveReset" style="margin-top:12px">Save completed reset</button>
+<p class="muted" style="margin-top:16px">If thoughts ever feel like an outside force is controlling your mind, commanding you, or making you feel unsafe, speak with someone you trust and a qualified mental-health professional. That is different from ordinary urges or intrusive thoughts.</p>
+</div>
+</div>
+</section>
+
+<section id="explore" class="tab">
+<div class="grid">
+<div class="card">
+<h2>Explore a fascinating idea</h2>
+<p class="muted">These entries separate established findings from interpretation and speculation. Mystery is worth exploring, but mystery is not proof.</p>
+<div class="factbox">
+<h3 id="exploreTitle"></h3>
+<p id="exploreText"></p>
+<div class="source" id="exploreSource"></div>
+<span id="exploreBadge" class="badge confirmed"></span>
+</div>
+<div class="actions"><button class="btn primary" id="randomFact">Show another</button><button class="btn gold" id="saveFavorite">Save favorite</button></div>
+</div>
+
+<div class="card half">
+<h2>How to examine unusual claims</h2>
+<div class="step"><div class="num">1</div><div><b>What is directly observed?</b><span class="muted">Dates, artifacts, measurements, location, physical evidence.</span></div></div>
+<div class="step"><div class="num">2</div><div><b>What is inferred?</b><span class="muted">The explanation believed to best fit the evidence.</span></div></div>
+<div class="step"><div class="num">3</div><div><b>What is speculative?</b><span class="muted">Possible and interesting, but not established.</span></div></div>
+<div class="step"><div class="num">4</div><div><b>What could prove it wrong?</b><span class="muted">A strong idea must risk failing.</span></div></div>
+</div>
+
+<div class="card half"><h2>Saved favorites</h2><div id="favoritesList" class="muted">No favorites saved yet.</div></div>
+</div>
+</section>
+
+<section id="history" class="tab">
+<div class="grid">
+<div class="card">
+<h2>Your patterns</h2>
+<div class="stats">
+<div class="stat"><b id="totalEntries">0</b><span>Check-ins</span></div>
+<div class="stat"><b id="mostTrigger">—</b><span>Most common trigger</span></div>
+<div class="stat"><b id="pauseRate">0%</b><span>Paused or redirected</span></div>
+<div class="stat"><b id="avgStrength">—</b><span>Average urge</span></div>
+</div>
+</div>
+<div class="card"><h2>Recent check-ins</h2><div style="overflow:auto"><table><thead><tr><th>Date</th><th>State</th><th>Trigger</th><th>Urge</th><th>Thought</th><th>Response</th><th></th></tr></thead><tbody id="historyRows"></tbody></table></div></div>
+</div>
+</section>
+
+<section id="backup" class="tab">
+<div class="grid">
+<div class="card half">
+<h2>Backup your entries</h2>
+<p class="muted">Your information is stored only in this browser. Export a backup so you can upload it to ChatGPT for pattern analysis.</p>
+<div class="actions"><button class="btn primary" id="exportData">Export backup</button><label class="btn secondary" for="importData" style="display:inline-block;margin:0">Import backup</label><input id="importData" type="file" accept=".json" style="display:none"></div>
+</div>
+<div class="card half">
+<h2>Add it to your phone</h2>
+<p class="muted"><b>iPhone:</b> open the file in Safari, tap Share, then choose “Add to Home Screen” when available.</p>
+<p class="muted"><b>Android:</b> open it in Chrome, tap the three-dot menu, then choose “Add to Home screen” or “Install app” when available.</p>
+<p class="muted">Some phones limit home-screen installation for local files. Keeping it bookmarked or in your Files app still works.</p>
+</div>
+<div class="card"><h2>Reset all local data</h2><button class="btn danger" id="clearAll">Clear everything</button></div>
+</div>
+</section>
+
+<div class="footer">Built for awareness, honesty, discipline, peace, and curiosity.</div>
+</div>
+<div id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const VERSES=[
+["Be still, and know that I am God.","Psalm 46:10"],["Keep thy heart with all diligence; for out of it are the issues of life.","Proverbs 4:23"],["He that is slow to anger is better than the mighty.","Proverbs 16:32"],["Let every man be swift to hear, slow to speak, slow to wrath.","James 1:19"],["For God hath not given us the spirit of fear; but of power, and of love, and of a sound mind.","2 Timothy 1:7"],["A soft answer turneth away wrath: but grievous words stir up anger.","Proverbs 15:1"],["Let us therefore follow after the things which make for peace.","Romans 14:19"],["In quietness and in confidence shall be your strength.","Isaiah 30:15"],["He that hath no rule over his own spirit is like a city that is broken down.","Proverbs 25:28"],["The thoughts of the diligent tend only to plenteousness.","Proverbs 21:5"],["To every thing there is a season, and a time to every purpose.","Ecclesiastes 3:1"],["The simple believeth every word: but the prudent man looketh well to his going.","Proverbs 14:15"],["Let all your things be done with charity.","1 Corinthians 16:14"],["A man's heart deviseth his way: but the Lord directeth his steps.","Proverbs 16:9"],["And let us not be weary in well doing.","Galatians 6:9"],["Better is a little with righteousness than great revenues without right.","Proverbs 16:8"],["Blessed are the peacemakers: for they shall be called the children of God.","Matthew 5:9"],["Whatsoever things are true... think on these things.","Philippians 4:8"],["Commit thy works unto the Lord, and thy thoughts shall be established.","Proverbs 16:3"],["Be not overcome of evil, but overcome evil with good.","Romans 12:21"],["In every thing give thanks.","1 Thessalonians 5:18"],["Pride goeth before destruction, and an haughty spirit before a fall.","Proverbs 16:18"],["Let your moderation be known unto all men.","Philippians 4:5"],["The fear of the Lord is the beginning of wisdom.","Proverbs 9:10"],["He that walketh with wise men shall be wise.","Proverbs 13:20"],["Let us not love in word, neither in tongue; but in deed and in truth.","1 John 3:18"],["A faithful man shall abound with blessings.","Proverbs 28:20"],["Watch ye, stand fast in the faith, quit you like men, be strong.","1 Corinthians 16:13"],["For where your treasure is, there will your heart be also.","Matthew 6:21"],["The wisdom that is from above is first pure, then peaceable, gentle, and easy to be intreated.","James 3:17"],["Wherefore by their fruits ye shall know them.","Matthew 7:20"]
+];
+const QUOTES=[
+"A thought can visit without becoming your decision.","The urge wants speed. Wisdom can tolerate ten minutes.","You do not need to defeat the feeling; you need to stop giving it commands.","Self-trust grows each time you keep one small promise.","The mind offers relief now and hides the cost later.","Boredom is not danger. It is unclaimed attention.","The peaceful response is often quieter than the impulsive one.","You cannot control the first thought, but you can train the next action.","An honest pause is stronger than a dramatic promise.","Do not ask whether the urge feels convincing. Ask whether it serves your values.","A pattern loses power when you can name it without obeying it.","Discipline is remembering what matters after motivation leaves.","Your body can carry an urge while your hands choose differently.","What feels urgent may only be familiar.","The next wise action matters more than the perfect explanation.","Awareness creates space; choice uses it.","Do not turn one slip into a new identity.","A calm decision does not need to hide its consequences.","You are not behind. You are at the next decision.","Peace is practiced in the seconds before reaction.","Your future self is built from ordinary interruptions of old habits.","You do not need certainty to make a wiser choice.","The thought says now. Your values can say not yet.","Progress is returning faster, not never slipping.","The mind can explain almost anything after desire has already chosen.","A craving is a wave, not a law.","The strongest version of you is not emotionless; he is less easily commanded.","Truth becomes useful when it changes behavior.","Your attention is part of your life. Spend it deliberately.","A peaceful life is made from disciplined moments, not dramatic escapes.","Pause long enough for the story to separate from the facts."
+];
+const FACTS=[
+{title:"Göbekli Tepe changed the timeline",text:"Göbekli Tepe in present-day Türkiye includes monumental stone structures built by hunter-gatherer communities beginning around 9600 BCE. It showed that large ceremonial construction could appear before cities, pottery, and full-scale agriculture.",source:"Source: UNESCO World Heritage Centre; archaeological research",level:"Confirmed"},
+{title:"The Younger Dryas was abrupt",text:"The Younger Dryas was a major return to colder conditions roughly 12,900 to 11,700 years ago, especially around the North Atlantic. Its onset was geologically rapid compared with many climate shifts.",source:"Source: NOAA paleoclimate research; peer-reviewed climate records",level:"Confirmed"},
+{title:"The Younger Dryas impact idea remains disputed",text:"Some researchers propose that fragments of a comet or asteroid contributed to environmental changes at the start of the Younger Dryas. Other researchers argue that the evidence is inconsistent or better explained by terrestrial processes.",source:"Source: Ongoing debate in peer-reviewed geology and archaeology",level:"Speculative"},
+{title:"The Sahara was once much greener",text:"During the African Humid Period, parts of the Sahara contained lakes, rivers, grasslands, and abundant wildlife. Human communities lived in regions that are now extremely dry.",source:"Source: Paleoclimate records; archaeology of North Africa",level:"Confirmed"},
+{title:"Ancient coastlines are now underwater",text:"Sea level rose by more than 100 meters after the last ice age. Many areas where prehistoric people may have lived are now submerged, making coastal archaeology incomplete.",source:"Source: Global sea-level reconstructions; marine archaeology",level:"Confirmed"},
+{title:"Missing evidence does not prove a lost global civilization",text:"Submerged coastlines make gaps in the archaeological record likely, but gaps alone do not demonstrate that an advanced worldwide civilization existed before the end of the last ice age.",source:"Reasoning note: possibility is not proof",level:"Interpretation"},
+{title:"The Antikythera mechanism was astonishingly advanced",text:"The Antikythera mechanism, built more than 2,000 years ago, used complex bronze gears to model astronomical cycles. It demonstrates that ancient engineering could be far more sophisticated than earlier historians assumed.",source:"Source: National Archaeological Museum, Athens; imaging studies",level:"Confirmed"},
+{title:"Earth's magnetic field has reversed many times",text:"Geological records show that Earth's magnetic north and south poles have reversed repeatedly. These reversals are irregular and usually unfold over long timescales rather than instantly.",source:"Source: USGS geomagnetism research",level:"Confirmed"},
+{title:"Human memory is reconstructive",text:"Memory is not a perfect recording. Each act of recall can rebuild an event using stored details, expectations, emotion, and later information.",source:"Source: Cognitive neuroscience and memory research",level:"Confirmed"},
+{title:"Placebo effects involve real biology",text:"Expectations and treatment context can alter pain, stress, symptoms, and measurable brain activity. This shows mind-body interaction, but it does not mean belief can cure every disease.",source:"Source: Clinical placebo research and neuroimaging",level:"Confirmed"},
+{title:"Your body is a community",text:"The human body contains trillions of microorganisms that interact with digestion, immunity, metabolism, and other systems. You are biologically an ecosystem as well as an individual organism.",source:"Source: Human microbiome research",level:"Confirmed"},
+{title:"Cells communicate constantly",text:"Cells use electrical and chemical signals to coordinate growth, repair, immunity, metabolism, and programmed cell death. Complex body-wide order emerges without a single cell understanding the whole organism.",source:"Source: Cell biology and physiology",level:"Confirmed"},
+{title:"Some organisms solve problems without brains",text:"Slime molds can form efficient networks between food sources despite having no brain or nervous system. Their behavior is studied as a simple form of distributed problem-solving.",source:"Source: Experimental biology of Physarum polycephalum",level:"Confirmed"},
+{title:"Trees and fungi exchange resources",text:"Mycorrhizal fungi form partnerships with plant roots and can transfer nutrients and chemical signals. Popular descriptions sometimes overstate this as a conscious 'wood wide web,' so interpretation matters.",source:"Source: Forest ecology and mycorrhizal research",level:"Interpretation"},
+{title:"Octopuses have distributed nervous systems",text:"A large share of an octopus's neurons are located in its arms. The arms can perform complex sensing and movement with substantial local processing.",source:"Source: Comparative neurobiology",level:"Confirmed"},
+{title:"Consciousness has no single agreed brain center",text:"Researchers study interacting cortical and subcortical networks rather than one simple consciousness spot. Major scientific theories still disagree about which processes are necessary.",source:"Source: Contemporary consciousness neuroscience",level:"Confirmed"},
+{title:"No single center does not mean no physical basis",text:"A distributed process can still be physical. A hurricane, ecosystem, or internet has no single point containing the whole phenomenon.",source:"Reasoning note: distributed organization can still emerge physically",level:"Interpretation"},
+{title:"Terminal lucidity is reported, but not explained",text:"Some people with severe dementia appear briefly clear and recognizable shortly before death. Researchers call this terminal or paradoxical lucidity, but evidence is limited and the mechanism remains unknown.",source:"Source: Emerging dementia and end-of-life research",level:"Confirmed"},
+{title:"Psychedelics alter large-scale brain organization",text:"Psychedelics can weaken ordinary self-related network patterns and increase unusual communication across brain systems. This can change identity, time, meaning, and perception.",source:"Source: Human neuroimaging research",level:"Confirmed"},
+{title:"A profound experience is not automatically a literal map",text:"An experience can be psychologically real and life-changing without every image or interpretation being objectively true about the external universe.",source:"Reasoning note: subjective depth and external accuracy differ",level:"Interpretation"},
+{title:"The Great Pyramid is closely aligned to cardinal directions",text:"The Great Pyramid of Giza is aligned remarkably close to true north, south, east, and west. Ancient builders likely used careful astronomical observation and surveying.",source:"Source: Archaeological surveying and archaeoastronomy",level:"Confirmed"},
+{title:"Precision does not require lost technology",text:"Ancient precision can often be explained through skilled labor, repeated measurement, simple tools, long planning, and accumulated craft knowledge.",source:"Reasoning note: prefer explanations supported by direct evidence",level:"Interpretation"},
+{title:"Humans were seafarers surprisingly early",text:"Archaeological evidence shows that humans reached islands and crossed bodies of water tens of thousands of years ago. Early people were capable planners and navigators.",source:"Source: Archaeology of early island settlement",level:"Confirmed"},
+{title:"Doggerland once connected Britain to Europe",text:"A large inhabited landscape called Doggerland once connected Britain to continental Europe. Rising seas gradually submerged it after the last ice age.",source:"Source: North Sea marine archaeology",level:"Confirmed"},
+{title:"The Amazon preserves evidence of complex societies",text:"Archaeology has revealed large earthworks, planned settlements, and modified landscapes in parts of the pre-Columbian Amazon. The region was not simply untouched wilderness.",source:"Source: Amazonian archaeology and remote sensing",level:"Confirmed"},
+{title:"Lidar has transformed archaeology",text:"Airborne lidar can reveal roads, terraces, buildings, and settlement patterns hidden beneath dense forests. It has expanded estimates of ancient population and landscape engineering.",source:"Source: Archaeological remote sensing",level:"Confirmed"},
+{title:"The brain predicts more than it passively records",text:"Many neuroscience models describe perception as a combination of incoming sensory data and predictions generated from past experience.",source:"Source: Predictive-processing research",level:"Confirmed"},
+{title:"Your sense of self is partly constructed",text:"The stable feeling of being one continuous self depends on memory, body signals, attention, and brain systems that integrate experience. This does not make the self unreal; it makes it a process.",source:"Source: Cognitive neuroscience and philosophy",level:"Interpretation"},
+{title:"Simple rules can produce great complexity",text:"Simple physical rules can generate extremely complex structures. Complexity alone is not proof of conscious design, but it shows how much order can emerge from interaction.",source:"Source: Complexity science and physics",level:"Interpretation"},
+{title:"Intelligence may exist on a spectrum",text:"Cells, organisms, colonies, and ecosystems can sense, respond, regulate, and adapt in different ways. Whether all of this should be called intelligence depends on how broadly the term is defined.",source:"Source: Systems biology and philosophy",level:"Interpretation"},
+{title:"Challenging a theory does not prove its opposite",text:"An unexplained event may reveal that a current theory is incomplete. It does not automatically establish whichever alternative explanation feels most meaningful.",source:"Reasoning principle",level:"Interpretation"}
+];
+const KEYS={entries:"mindUrge_entries",resets:"mindUrge_resets",favorites:"mindUrge_favorites"};
+const get=(k,f=[])=>JSON.parse(localStorage.getItem(k)||JSON.stringify(f));
+const set=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const todayISO=()=>new Date().toISOString().slice(0,10);
+const esc=(s="")=>s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+function dateIndex(date,len){const d=new Date(date+"T12:00:00"),s=new Date(d.getFullYear(),0,0);return Math.floor((d-s)/86400000)%len}
+function badge(el,level){el.className="badge "+level.toLowerCase();el.textContent=level}
+function setDaily(){const date=$("entryDate").value||todayISO(),v=VERSES[dateIndex(date,VERSES.length)],q=QUOTES[dateIndex(date,QUOTES.length)],f=FACTS[dateIndex(date,FACTS.length)];$("dailyVerse").textContent="“"+v[0]+"”";$("verseRef").textContent=v[1]+" · KJV";$("dailyQuote").textContent=q;$("dailyFact").textContent=f.text;$("factSource").textContent=f.source;badge($("factBadge"),f.level)}
+function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),1800)}
+function form(){return{date:$("entryDate").value,state:$("state").value,thought:$("thought").value.trim(),body:$("body").value.trim(),trigger:$("trigger").value,strength:+$("strength").value,reward:$("reward").value.trim(),ignored:$("ignored").value.trim(),wise:$("wise").value.trim(),delay:$("delay").value,action:$("action").value,replacement:$("replacement").value.trim(),lesson:$("lesson").value.trim(),gratitude:$("gratitude").value.trim(),truth:$("truth").value.trim(),next:$("next").value.trim(),savedAt:new Date().toISOString()}}
+function fill(e={}){$("state").value=e.state||"Calm";["thought","body","reward","ignored","wise","replacement","lesson","gratitude","truth","next"].forEach(k=>$(k).value=e[k]||"");$("trigger").value=e.trigger||"Boredom";$("strength").value=e.strength||5;$("delay").value=e.delay||"10 minutes";$("action").value=e.action||"I am still deciding";ranges()}
+function saveEntry(){const e=form();if(!e.date)return toast("Choose a date.");const a=get(KEYS.entries),i=a.findIndex(x=>x.date===e.date);i>=0?a[i]=e:a.push(e);set(KEYS.entries,a);toast("Check-in saved.");renderAll()}
+function loadEntry(){const e=get(KEYS.entries).find(x=>x.date===$("entryDate").value);fill(e||{});if(e)toast("Saved entry loaded.")}
+function ranges(){$("strengthVal").textContent=$("strength").value+"/10";$("afterStrengthVal").textContent=$("afterStrength").value+"/10"}
+let secs=600,timer=null,breather=null,inhale=true;
+function renderTimer(){const m=String(Math.floor(secs/60)).padStart(2,"0"),s=String(secs%60).padStart(2,"0");$("timerDisplay").textContent=m+":"+s}
+function startTimer(){if(timer)return;timer=setInterval(()=>{secs--;renderTimer();if(secs<=0){clearInterval(timer);timer=null;stopBreath();toast("Pause complete. Choose again calmly.")}},1000);if(!breather)breather=setInterval(()=>{inhale=!inhale;$("breathText").textContent=inhale?"Inhale":"Exhale"},4000)}
+function stopBreath(){if(breather){clearInterval(breather);breather=null}}
+function pauseTimer(){if(timer){clearInterval(timer);timer=null}stopBreath()}
+function resetTimer(){pauseTimer();secs=600;renderTimer();$("breathText").textContent="Inhale"}
+function saveReset(){const a=get(KEYS.resets);a.push({id:Date.now(),date:new Date().toISOString(),after:+$("afterStrength").value});set(KEYS.resets,a);$("urgeNow").textContent=$("afterStrength").value+"/10";toast("Reset saved.");renderAll()}
+let current=0;
+function showFact(i){current=i;const f=FACTS[i];$("exploreTitle").textContent=f.title;$("exploreText").textContent=f.text;$("exploreSource").textContent=f.source;badge($("exploreBadge"),f.level)}
+function randomFact(){let n=Math.floor(Math.random()*FACTS.length);if(n===current)n=(n+1)%FACTS.length;showFact(n)}
+function favorite(){const a=get(KEYS.favorites);if(!a.includes(current))a.push(current);set(KEYS.favorites,a);toast("Favorite saved.");renderFavs()}
+function removeFavorite(i){set(KEYS.favorites,get(KEYS.favorites).filter(x=>x!==i));renderFavs()}
+function renderFavs(){const a=get(KEYS.favorites);$("favoritesList").innerHTML=a.length?a.map(i=>`<div style="padding:10px 0;border-bottom:1px solid #eceeea"><b>${esc(FACTS[i].title)}</b><div class="muted" style="margin-top:4px">${esc(FACTS[i].text)}</div><button class="btn danger" style="margin-top:8px" onclick="removeFavorite(${i})">Remove</button></div>`).join(""):"No favorites saved yet."}
+function deleteEntry(date){set(KEYS.entries,get(KEYS.entries).filter(x=>x.date!==date));renderAll()}
+function renderHistory(){const a=get(KEYS.entries).sort((x,y)=>y.date.localeCompare(x.date));$("totalEntries").textContent=a.length;if(a.length){const c={};a.forEach(x=>c[x.trigger]=(c[x.trigger]||0)+1);$("mostTrigger").textContent=Object.entries(c).sort((x,y)=>y[1]-x[1])[0][0];$("pauseRate").textContent=Math.round(a.filter(x=>/paused|delayed|replaced/i.test(x.action)).length/a.length*100)+"%";$("avgStrength").textContent=(a.reduce((s,x)=>s+Number(x.strength||0),0)/a.length).toFixed(1)+"/10"}else{$("mostTrigger").textContent="—";$("pauseRate").textContent="0%";$("avgStrength").textContent="—"}$("historyRows").innerHTML=a.length?a.map(x=>`<tr><td>${x.date}</td><td>${esc(x.state)}</td><td>${esc(x.trigger)}</td><td>${x.strength}/10</td><td>${esc(x.thought)}</td><td>${esc(x.action)}</td><td><button class="btn danger" onclick="deleteEntry('${x.date}')">Delete</button></td></tr>`).join(""):`<tr><td colspan="7" class="empty">No check-ins saved.</td></tr>`;$("resetCount").textContent=get(KEYS.resets).length}
+function exportData(){const d={version:1,exported:new Date().toISOString(),entries:get(KEYS.entries),resets:get(KEYS.resets),favorites:get(KEYS.favorites)},b=new Blob([JSON.stringify(d,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="mind-urge-compass-backup-"+todayISO()+".json";a.click();URL.revokeObjectURL(a.href)}
+function importData(file){const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);set(KEYS.entries,d.entries||[]);set(KEYS.resets,d.resets||[]);set(KEYS.favorites,d.favorites||[]);renderAll();loadEntry();toast("Backup imported.")}catch(e){toast("That backup file is not valid.")}};r.readAsText(file)}
+function clearAll(){if(confirm("Permanently delete all saved data from this browser?")){Object.values(KEYS).forEach(k=>localStorage.removeItem(k));location.reload()}}
+function renderAll(){renderHistory();renderFavs();setDaily()}
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));b.classList.add("active");$(b.dataset.tab).classList.add("active");renderAll()}));
+$("entryDate").addEventListener("change",()=>{loadEntry();setDaily()});$("strength").addEventListener("input",ranges);$("afterStrength").addEventListener("input",ranges);
+$("saveEntry").onclick=saveEntry;$("loadEntry").onclick=loadEntry;$("clearForm").onclick=()=>{fill({});toast("Form cleared.")};
+$("startTimer").onclick=startTimer;$("pauseTimer").onclick=pauseTimer;$("resetTimer").onclick=resetTimer;$("saveReset").onclick=saveReset;
+$("randomFact").onclick=randomFact;$("saveFavorite").onclick=favorite;
+$("exportData").onclick=exportData;$("importData").addEventListener("change",e=>e.target.files[0]&&importData(e.target.files[0]));$("clearAll").onclick=clearAll;
+$("entryDate").value=todayISO();showFact(dateIndex(todayISO(),FACTS.length));renderTimer();ranges();loadEntry();renderAll();
+</script>
+</body>
+</html>
